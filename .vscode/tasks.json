@@ -1,0 +1,149 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "build",
+      "type": "shell",
+      "command": "make",
+      "args": [
+        "build",
+        "TASK=${input:task}"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "clear": true
+      },
+      "problemMatcher": [
+        "$gcc"
+      ]
+    },
+    {
+      "label": "run",
+      "type": "shell",
+      "command": "make",
+      "args": [
+        "run",
+        "TASK=${input:task}"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "group": "none",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "clear": true,
+        "focus": true
+      },
+      "problemMatcher": [
+        "$gcc"
+      ]
+    },
+    {
+      "label": "test",
+      "type": "shell",
+      "command": "make",
+      "args": [
+        "test",
+        "TASK=${input:task}"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "clear": true
+      },
+      "problemMatcher": [
+        "$gcc"
+      ]
+    },
+    {
+      "label": "build-all",
+      "type": "shell",
+      "command": "make",
+      "args": [
+        "all"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "clear": true
+      },
+      "problemMatcher": [
+        "$gcc"
+      ]
+    },
+    {
+      "label": "build-active",
+      "type": "shell",
+      "command": "make",
+      "args": [
+        "build",
+        "TASK=${fileBasenameNoExtension}"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "clear": true
+      },
+      "problemMatcher": [
+        "$gcc"
+      ]
+    }
+  ],
+  "inputs": [
+    {
+      "id": "task",
+      "type": "pickString",
+      "description": "Wybierz zadanie",
+      "default": "zad01",
+      "options": [
+        {
+          "label": "zad01 — Wypełnianie tablicy",
+          "value": "zad01"
+        },
+        {
+          "label": "zad02 — Stos na tablicy",
+          "value": "zad02"
+        },
+        {
+          "label": "zad03 — Jedno działanie w odwrotnej notacji polskiej",
+          "value": "zad03"
+        },
+        {
+          "label": "zad04 — Wieloetapowe wyrażenia w odwrotnej notacji polskiej",
+          "value": "zad04"
+        },
+        {
+          "label": "zad05 — Stos z dynamiczną pamięcią",
+          "value": "zad05"
+        },
+        {
+          "label": "zad06 — Kalkulator z dynamicznym stosem",
+          "value": "zad06"
+        }
+      ]
+    }
+  ]
+}
