@@ -8,6 +8,76 @@
 
 Piąte laboratorium z języka C, przygotowane do pracy w środowisku GitHub Codespaces.
 
+## Cel laboratorium
+
+Celem zajęć jest zapoznanie studenta ze:
+
+- strukturami,
+- uniami,
+- budowaniem realacji między strukturami za pomocą wskaźników
+- budowaniem "drzewa AST" dla obliczeń arytmetycznych
+
+## Struktura projektu
+
+```text
+.
+├── .devcontainer/
+│   └── devcontainer.json
+├── .vscode/
+│   ├── launch.json
+│   └── tasks.json
+├── src/
+│   ├── zad01.c
+│   ├── zad02.c
+│   ├── zad03.c
+│   ├── zad04.c
+│   ├── zad05.c
+│   └── zad06.c
+├── tests/
+├── build/
+├── run_tests.sh
+├── Makefile
+└── README.md
+```
+
+Najważniejsze elementy projektu:
+
+- `src/zadXX.c` — plik źródłowy danego zadania,
+- `build/zadXX` — plik wykonywalny danego zadania,
+- `run_tests.sh` — skrypt sprawdzający wynik programu.
+
+Każdy plik `src/zadXX.c` jest osobnym programem z własną funkcją `main`.
+
+## Budowanie, uruchamianie i testowanie
+
+Przykład dla zadania 1:
+
+```bash
+make TASK=zad01
+make run TASK=zad01
+make test TASK=zad01
+```
+
+Aby zbudować wszystkie zadania:
+
+```bash
+make all
+```
+
+Możesz również skorzystać z tasków w VS Code:
+
+- `build` — budowanie wybranego zadania,
+- `run` — uruchomienie wybranego zadania,
+- `test` — sprawdzenie wybranego zadania,
+- `build-all` — budowanie wszystkich zadań.
+
+Taski `build`, `run` i `test` wyświetlają listę zadań do wyboru.
+
+Kod przygotuj w standardzie C99. Kompilacja wykorzystuje flagi:
+
+```text
+-std=c99 -Wall -Wextra -Wpedantic -g
+```
 
 
 ## Zadania
@@ -116,28 +186,11 @@ Jak zmienić pola `left` i `right`, aby przechowywały odwołania do innych obie
 
 Popraw definicję tak, aby program się kompilował.
 
-Utwórz funkcję:
-
-```c
-float calculate_node(Node node);
-```
-
-bazując na `calculate_operation` z zadania 2.
-
-Wywołaj funkcję dla kolejnych węzłów.
-
-#### Oczekiwane wyjście
-
-```text
-result: 2.0000
-result: 14.0000
-```
-
 ### 4. Określanie rodzaju danych za pomocą enum
 
 Plik: `src/zad04.c`.
 
-Wykorzystaj typy `Operation` i `Expression` z zadania 3. Przygotuj strukturę, która może opisywać pojedynczą liczbę albo wyrażenie. Informację o rodzaju zapisanych danych przechowaj za pomocą typu wyliczeniowego.
+Wykorzystaj typ `Expression` z zadania 3. Przygotuj strukturę, która może opisywać pojedynczą liczbę albo wyrażenie. Informację o rodzaju zapisanych danych przechowaj za pomocą typu wyliczeniowego.
 
 Zdefiniuj typ `NodeType` za pomocą `typedef enum`, nadając jego wartościom nazwy:
 
@@ -154,16 +207,32 @@ Następnie zdefiniuj typ `Node` jako strukturę z polami:
 | `value` | `float` | Wartość liczbowa |
 | `expression` | `Expression` | Wyrażenie zbudowane jak w zadaniu 3 |
 
-W funkcji `main` utwórz dwie zmienne typu `Node`:
 
-- pierwszą oznacz jako `NODE_VALUE` i przypisz jej wartość `2`;
-- drugą oznacz jako `NODE_EXPRESSION` i zapisz w niej wyrażenie `(0 + 2) * (4 + 3)`.
-
-
-W funkcji sprawdź pole `type` za pomocą `switch`:
+Utowrz funkcję `check_type` sprawdzającą typ węzła `type` za pomocą `switch`:
 
 - dla `NODE_VALUE` zwróć zawartość pola `value`;
-- dla `NODE_EXPRESSION` oblicz wartość pola `expression`, korzystając z funkcji `calculate_node` z zadania 3.
+- dla `NODE_EXPRESSION` oblicz wartość pola `expression`, 
+
+Opierając się na funkcji `calculate_operation` utworz funkcję `calculate_node`
+
+```c
+float calculate_node(struct Node ex);
+``` 
+
+używajacej`check_type`. zwracaj wynik działania do pola value.
+
+W funkcji main utwórz węzły liczbowe oraz węzły działań potrzebne do zapisania wyrażenia `2 * (4 + 3)`.
+
+- z `type = NODE_VALUE` i przypisz jej wartość `2`;
+- z `type = NODE_EXPRESSION` i zapisz w niej wyrażenie `(4 + 3)`.
+
+Wyznacz wartość wyrażenia. 
+
+#### Oczekiwane wyjście
+
+```text
+result: 14.0000
+```
 
 
 ### 5. Unia przechowująca różne rodzaje danych
@@ -216,14 +285,14 @@ Plik: `src/zad06.c`.
 
 W zadaniu 4 struktura `Node` zawierała osobne pola `value` i `expression`. Pole `type` określało, z którego z nich korzysta funkcja `calculate_node`.
 
-Wykorzystaj unię poznaną w zadaniu 5, aby oba warianty współdzieliły pamięć.
+Wykorzystaj unię poznaną w zadaniu 5, aby oba warianty współdzieliły pamięć. Zmodyfikuj `Expression` aby `left` i `right` były wskaźnikami na `Node`, uzyskując pełną elastyczność.
 
 Zdefiniuj typ `NodeData` za pomocą `typedef union`:
 
 | Pole | Typ | Znaczenie |
 |---|---|---|
 | `value` | `float` | Wartość liczbowa |
-| `expression` | `Expression` | Wyrażenie |
+| `node` | `Node` | Wyrażenie |
 
 Zmień strukturę `Node`, aby zawierała pola:
 
@@ -234,11 +303,12 @@ Zmień strukturę `Node`, aby zawierała pola:
 
 Dostosuj funkcję `calculate_node` oraz przypisania w `main` do nowej budowy struktury. Dostęp do liczby będzie odbywał się przez `node.data.value`, a do wyrażenia przez `node.data.expression`.
 
-Zachowaj przykłady z zadania 4, wykryj typ danych uzywajac pola type. Oblicz ich wartości za pomocą `calculate_node` i wypisz wyniki.
+Wykryj typ danych uzywajac pola type. Oblicz ich wartości za pomocą `calculate_node` i wypisz wyniki.
+Wykonaj następujące obliczenia `2 * (4 + 3)`, `(7-1)/2`
 
 #### Oczekiwane wyjście
 
 ```text
-result: 2.0000
 result: 14.0000
+result: 3.0000
 ```
